@@ -142,8 +142,17 @@ func draw_grid() -> void:
 	draw_rect(rect, Config.bg_color)
 	
 func draw_snake() -> void:
+	var segment_centers: PackedVector2Array = []
 	for index in range(segments.size()):
-		draw_segment(index)
+		var center = get_segment_center(index)
+		segment_centers.append(center)
+	draw_polyline(segment_centers, Color.WHITE, Config.cell_size * 0.8, true)
+		
+func get_segment_center(index: int) -> Vector2:
+	var segment = segments[index]
+	var cell_size = Config.cell_size
+	var top_left = segment * cell_size
+	return Vector2(top_left.x + cell_size/2, top_left.y + cell_size/2)
 
 func draw_segment(index: int) -> void:
 	var reversed_index = segments.size() - 1 - index
