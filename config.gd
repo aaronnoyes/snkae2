@@ -2,11 +2,15 @@ extends Node
 
 var width = 10
 var height = 9
-var cell_size = 64
+var cell_size = 64.0
 
 var speed = 5.0
 
 var num_apples = 1
+
+var min_gap = 5.0
+var max_gap = float(cell_size / 4)
+var gap_step = 0.5
 
 var bg_color = Color.BLACK
 var snake_color = Color.WHITE

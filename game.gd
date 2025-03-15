@@ -96,9 +96,10 @@ func place_apple(index: int) -> void:
 
 func draw_apples() -> void:
 	for apple in apples:
-		var x = apple.x * Config.cell_size
-		var y = apple.y * Config.cell_size
-		var size = Config.cell_size
+		var gap = Config.min_gap
+		var size = Config.cell_size - 2*gap
+		var x = apple.x * Config.cell_size + gap
+		var y = apple.y * Config.cell_size + gap
 		var rect = Rect2(x, y, size, size)
 		draw_rect(rect, Config.apple_color)
 
@@ -109,13 +110,20 @@ func draw_grid() -> void:
 	draw_rect(rect, Config.bg_color)
 	
 func draw_snake() -> void:
-	for segment in segments:
-		var x = segment.x * Config.cell_size
-		var y = segment.y * Config.cell_size
-		var size = Config.cell_size
-		var rect = Rect2(x, y, size, size)
-		draw_rect(rect, Config.snake_color)
+	for index in range(segments.size()):
+		draw_segment(index)
 
+func draw_segment(index: int) -> void:
+	var reversed_index = segments.size() - 1 - index
+	var intended_gap = Config.min_gap + reversed_index*Config.gap_step
+	var gap = intended_gap if intended_gap <= Config.max_gap else Config.max_gap
+	var size = Config.cell_size - 2*gap
+	var segment = segments[index]
+	var x = segment.x * Config.cell_size + gap
+	var y = segment.y * Config.cell_size + gap
+	var rect = Rect2(x, y, size, size)
+	draw_rect(rect, Config.snake_color)
+	
 func get_point_index(point: Vector2, targets: Array[Vector2]) -> int:
 	for index in range(targets.size()):
 		var target = targets[index]
