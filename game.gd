@@ -6,6 +6,7 @@ var apples: Array[Vector2]
 var direction = Vector2(1, 0)
 var next_direction = Vector2(1, 0)
 var score = 0
+var moving = false
 
 func _draw() -> void:
 	draw_grid()
@@ -16,7 +17,7 @@ func _draw() -> void:
 func _ready() -> void:
 	move_timer = Timer.new()
 	move_timer.wait_time = 1/Config.speed
-	move_timer.autostart = true
+	move_timer.autostart = false
 	move_timer.one_shot = false
 	move_timer.timeout.connect(_on_move_timer_timeout)
 	add_child(move_timer)
@@ -26,6 +27,10 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if Input.is_anything_pressed():
+		if !moving:
+			resume()
+			
 	if Input.is_action_just_pressed("ui_up") and direction != Vector2(0, 1):
 		next_direction = Vector2(0, -1)
 	elif Input.is_action_just_pressed("ui_down") and direction != Vector2(0, -1):
@@ -56,6 +61,7 @@ func _on_move_timer_timeout() -> void:
 		segments.pop_front()
 		
 func init_game() -> void:
+	pause()
 	score = 0
 	direction = Vector2(1, 0)
 	next_direction = Vector2(1, 0)
@@ -127,3 +133,10 @@ func is_game_over(head: Vector2) -> bool:
 	var snake_overlap_index = get_point_index(head, segments)
 	return snake_overlap_index >= 0
 	
+func pause() -> void:
+	moving = false
+	move_timer.stop()
+
+func resume() -> void:
+	moving = true
+	move_timer.start()
