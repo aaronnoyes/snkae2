@@ -1,12 +1,15 @@
 extends Node2D
 
+var initial_direction = Vector2(1, 0)
+var max_buffer_size = 2
+
 var move_timer: Timer
 var segments: Array[Vector2]
 var apples: Array[Vector2]
-var direction = Vector2(1, 0)
-var next_direction = Vector2(1, 0)
-var score = 0
-var moving = false
+var direction: Vector2
+var input_buffer: Array[Vector2]
+var score: int
+var moving: bool
 
 func _draw() -> void:
 	draw_grid()
@@ -30,20 +33,30 @@ func _process(delta: float) -> void:
 	if Input.is_anything_pressed():
 		if !moving:
 			resume()
+	
+	var new_input = null
 			
-	if Input.is_action_just_pressed("ui_up") and direction != Vector2(0, 1):
-		next_direction = Vector2(0, -1)
-	elif Input.is_action_just_pressed("ui_down") and direction != Vector2(0, -1):
-		next_direction = Vector2(0, 1)
-	elif Input.is_action_just_pressed("ui_left") and direction != Vector2(1, 0):
-		next_direction = Vector2(-1, 0)
-	elif Input.is_action_just_pressed("ui_right") and direction != Vector2(-1, 0):
-		next_direction = Vector2(1, 0)
+	if Input.is_action_just_pressed("ui_up"):
+		new_input = Vector2(0, -1)
+	elif Input.is_action_just_pressed("ui_down"):
+		new_input = Vector2(0, 1)
+	elif Input.is_action_just_pressed("ui_left"):
+		new_input = Vector2(-1, 0)
+	elif Input.is_action_just_pressed("ui_right"):
+		new_input = Vector2(1, 0)
+	
+	if new_input != null and input_buffer.size() <= max_buffer_size:
+		var last_input = direction if input_buffer.is_empty() else input_buffer.back()
+		if new_input + last_input != Vector2.ZERO:
+			input_buffer.append(new_input)
+			
 		
 	queue_redraw()
 
 func _on_move_timer_timeout() -> void:
-	direction = next_direction
+	var new_direction = input_buffer.pop_front()
+	if new_direction != null:
+		direction = new_direction
 	var head = segments.back()
 	var new_head = head + direction
 	
@@ -63,16 +76,16 @@ func _on_move_timer_timeout() -> void:
 func init_game() -> void:
 	pause()
 	score = 0
-	direction = Vector2(1, 0)
-	next_direction = Vector2(1, 0)
+	direction = initial_direction
+	input_buffer = []
 	init_snake()
 	init_apples()
 	
 func init_snake() -> void:
 	segments = []
 	var head = Vector2(ceil(Config.width/3), ceil(Config.height/2))
-	var body = head - direction
-	var tail = body - direction
+	var body = head - initial_direction
+	var tail = body - initial_direction
 	segments.append(tail)
 	segments.append(body)
 	segments.append(head)
