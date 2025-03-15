@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://jdfh8dvmnlh1"]
+[gd_scene load_steps=3 format=3 uid="uid://jdfh8dvmnlh1"]
 
 [ext_resource type="Script" path="res://game.gd" id="1_hhrg7"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_lb2tn"]
+font_size = 64
+font_color = Color(0, 0, 0, 1)
+
 [node name="Game" type="Node2D"]
 script = ExtResource("1_hhrg7")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="HUD"]
+layout_mode = 0
+
+[node name="ScoreLabel" type="Label" parent="HUD"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+label_settings = SubResource("LabelSettings_lb2tn")

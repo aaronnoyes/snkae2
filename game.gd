@@ -1,5 +1,9 @@
 extends Node2D
 
+@onready var hud: Control = $HUD
+@onready var score_label: Label = $HUD/ScoreLabel
+@onready var hud_background: ColorRect = $HUD/Background
+
 var initial_direction = Vector2(1, 0)
 var max_buffer_size = 2
 
@@ -25,11 +29,24 @@ func _ready() -> void:
 	move_timer.timeout.connect(_on_move_timer_timeout)
 	add_child(move_timer)
 	
+	hud_background.color = Config.snake_color
+	score_label.add_theme_color_override("font_color", Config.bg_color)
+	
 	init_game()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	var grid_width = Config.cell_size * Config.width
+	var screen_width = get_viewport_rect().size.x
+	var screen_height = get_viewport_rect().size.y
+
+	hud.position.x = grid_width
+	hud.set_size(Vector2(screen_width - grid_width, screen_height))
+
+	hud_background.set_size(hud.size)
+
+	
 	if Input.is_anything_pressed():
 		if !moving:
 			resume()
@@ -68,13 +85,15 @@ func _on_move_timer_timeout() -> void:
 	segments.append(new_head)
 	
 	if apple_index >= 0:
-		score += 1
+		score = score + 1
+		update_score_label()
 		place_apple(apple_index)
 	else:
 		segments.pop_front()
 		
 func init_game() -> void:
 	pause()
+	update_score_label()
 	score = 0
 	direction = initial_direction
 	input_buffer = []
@@ -161,3 +180,6 @@ func pause() -> void:
 func resume() -> void:
 	moving = true
 	move_timer.start()
+
+func update_score_label() -> void:
+	score_label.text = "Score: " + str(score)
