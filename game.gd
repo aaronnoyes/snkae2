@@ -90,8 +90,7 @@ func _on_move_timer_timeout() -> void:
 	if is_game_over(new_head):
 		pause()
 		game_over = true
-		if apples.size() == 0:
-			segments.append(new_head)
+		segments.append(new_head)
 		return
 		
 	var apple_index = get_point_index(new_head, apples)
