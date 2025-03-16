@@ -89,7 +89,9 @@ func _on_move_timer_timeout() -> void:
 	
 	if is_game_over(new_head):
 		pause()
-		game_over = true;
+		game_over = true
+		if apples.size() == 0:
+			segments.append(new_head)
 		return
 		
 	var apple_index = get_point_index(new_head, apples)
@@ -156,7 +158,10 @@ func place_apple(index: int) -> void:
 			if !in_snake and !in_apple:
 				valid_positions.append(Vector2(col, row))
 	
-	apples[index] = valid_positions.pick_random()
+	if valid_positions.is_empty():
+		apples.pop_at(index)
+	else:
+		apples[index] = valid_positions.pick_random()
 
 func draw_apples() -> void:
 	for apple in apples:
