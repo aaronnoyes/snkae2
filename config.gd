@@ -1,10 +1,10 @@
 extends Node
 
-var width = 6
-var height = 5
+var width = 10
+var height = 9
 var cell_size = 64.0
 
-var speed = 5.0
+var speed = 6.0
 
 var num_apples = 5
 
