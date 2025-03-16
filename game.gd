@@ -14,6 +14,7 @@ var direction: Vector2
 var input_buffer: Array[Vector2]
 var score: int
 var moving: bool
+var game_over: bool
 
 func _draw() -> void:
 	draw_grid()
@@ -47,9 +48,8 @@ func _process(delta: float) -> void:
 	hud_background.set_size(hud.size)
 
 	
-	if Input.is_anything_pressed():
-		if !moving:
-			resume()
+	if Input.is_action_just_pressed("ui_accept") and game_over:
+		init_game()
 	
 	var new_input = null
 			
@@ -61,6 +61,9 @@ func _process(delta: float) -> void:
 		new_input = Vector2(-1, 0)
 	elif Input.is_action_just_pressed("ui_right"):
 		new_input = Vector2(1, 0)
+	
+	if !game_over and new_input != null and !moving:
+		resume()
 	
 	if new_input != null and input_buffer.size() <= max_buffer_size:
 		var last_input = direction if input_buffer.is_empty() else input_buffer.back()
@@ -78,7 +81,8 @@ func _on_move_timer_timeout() -> void:
 	var new_head = head + direction
 	
 	if is_game_over(new_head):
-		init_game()
+		pause()
+		game_over = true;
 		return
 		
 	var apple_index = get_point_index(new_head, apples)
@@ -97,6 +101,7 @@ func init_game() -> void:
 	score = 0
 	direction = initial_direction
 	input_buffer = []
+	game_over = false
 	init_snake()
 	init_apples()
 	
