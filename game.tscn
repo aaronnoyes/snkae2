@@ -20,8 +20,15 @@ grow_vertical = 2
 [node name="Background" type="ColorRect" parent="HUD"]
 layout_mode = 0
 
-[node name="ScoreLabel" type="Label" parent="HUD"]
+[node name="LabelContainer" type="VBoxContainer" parent="HUD"]
 layout_mode = 0
 offset_right = 40.0
-offset_bottom = 23.0
+offset_bottom = 40.0
+
+[node name="ScoreLabel" type="Label" parent="HUD/LabelContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_lb2tn")
+
+[node name="TimeLabel" type="Label" parent="HUD/LabelContainer"]
+layout_mode = 2
 label_settings = SubResource("LabelSettings_lb2tn")

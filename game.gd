@@ -1,7 +1,8 @@
 extends Node2D
 
 @onready var hud: Control = $HUD
-@onready var score_label: Label = $HUD/ScoreLabel
+@onready var score_label: Label = $HUD/LabelContainer/ScoreLabel
+@onready var time_label: Label = $HUD/LabelContainer/TimeLabel
 @onready var hud_background: ColorRect = $HUD/Background
 
 var initial_direction = Vector2(1, 0)
@@ -15,6 +16,7 @@ var input_buffer: Array[Vector2]
 var score: int
 var moving: bool
 var game_over: bool
+var elapsed: float
 
 func _draw() -> void:
 	draw_grid()
@@ -32,12 +34,17 @@ func _ready() -> void:
 	
 	hud_background.color = Config.snake_color
 	score_label.add_theme_color_override("font_color", Config.bg_color)
+	time_label.add_theme_color_override("font_color", Config.bg_color)
 	
 	init_game()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if moving and !game_over:
+		elapsed = elapsed + delta
+		update_time_label()
+	
 	var grid_width = Config.cell_size * Config.width
 	var screen_width = get_viewport_rect().size.x
 	var screen_height = get_viewport_rect().size.y
@@ -97,11 +104,15 @@ func _on_move_timer_timeout() -> void:
 		
 func init_game() -> void:
 	pause()
-	update_score_label()
 	score = 0
 	direction = initial_direction
 	input_buffer = []
 	game_over = false
+	elapsed = 0
+	
+	update_score_label()
+	update_time_label()
+	
 	init_snake()
 	init_apples()
 	
@@ -117,7 +128,23 @@ func init_snake() -> void:
 func init_apples() -> void:
 	apples = []
 	var first = Vector2(ceil(Config.width * 3/4), ceil(Config.height/2))
-	apples.append(first)
+	var apple_offsets: Array[Vector2] = [
+		Vector2(-2, -2),
+		Vector2(-2, 2),
+		Vector2(2, 2),
+		Vector2(2, -2),
+	]
+	if Config.num_apples == 1:
+		apples.append(first)
+	else:
+		first = first + Vector2.LEFT
+		apples.append(first)
+		if Config.num_apples > 1:
+			apples.append(first + apple_offsets[0])
+			apples.append(first + apple_offsets[1])
+		if Config.num_apples > 3:
+			apples.append(first + apple_offsets[2])
+			apples.append(first + apple_offsets[3])
 	
 func place_apple(index: int) -> void:
 	var valid_positions: Array[Vector2] = []
@@ -197,3 +224,7 @@ func resume() -> void:
 
 func update_score_label() -> void:
 	score_label.text = "Score: " + str(score)
+
+func update_time_label() -> void:
+	var time_string = "Time: %.02f" % elapsed
+	score_label.text = time_string

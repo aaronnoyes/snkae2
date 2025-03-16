@@ -6,7 +6,7 @@ var cell_size = 64.0
 
 var speed = 5.0
 
-var num_apples = 1
+var num_apples = 5
 
 var min_gap = 5.0
 var max_gap = float(cell_size / 4)
